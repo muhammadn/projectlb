@@ -1045,7 +1045,6 @@ version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d69b4841cdc05e8d1bf08a41231fb761ca7aac95fa1a75078b7f8cd23b57309d"
 dependencies = [
- "pingora-cache",
  "pingora-core",
  "pingora-http",
  "pingora-load-balancing",
@@ -1341,11 +1340,19 @@ dependencies = [
 name = "projectlb"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "futures",
  "hyper",
+ "log",
  "pingora",
+ "pingora-core",
+ "pingora-http",
+ "pingora-load-balancing",
+ "pingora-proxy",
  "rs-consul",
  "serde_yaml 0.9.33",
+ "structopt",
+ "tokio",
 ]
 
 [[package]]
