@@ -6,7 +6,6 @@ use std::collections::HashMap;
 use futures::executor::block_on;
 use core::fmt::Error;
 
-pub mod config;
 pub mod consul;
 
 fn main() {
