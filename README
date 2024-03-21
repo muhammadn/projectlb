@@ -1,0 +1,1 @@
+This is a prototype load balancer using cloudflare pingora library with service discovery via Hashicorp Consul. It's still a work in progress, still halfway through.
