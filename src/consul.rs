@@ -9,7 +9,7 @@ pub fn consul_client() -> Consul {
   // new client builder
   let client = Client::builder();
   // set configuration for consul
-  let config = Config{address: "localhost".to_string(), token: None, hyper_builder: client};
+  let config = Config{address: "http://consul.server:8500".to_string(), token: None, hyper_builder: client};
 
   // initialise consul
   let consul = Consul::new(config);
@@ -22,4 +22,11 @@ pub async fn register_service(register_entity_payload: RegisterEntityPayload) ->
   let register = consul.register_entity(&register_entity_payload).await;
 
   Ok(register?)
+}
+
+pub async fn get_service_address_ports(service: &str) -> Result<Vec<(String, u16)>, ConsulError> {
+  let consul = consul_client();
+  let service = consul.get_service_addresses_and_ports(&service, None).await;
+
+  Ok(service?)
 }
