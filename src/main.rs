@@ -15,7 +15,6 @@ use pingora_core::Result;
 use pingora_load_balancing::{selection::RoundRobin, LoadBalancer};
 use pingora_proxy::{ProxyHttp, Session};
 
-pub mod config;
 pub mod consul;
 
 pub struct LB(Arc<LoadBalancer<RoundRobin>>);
