@@ -1349,6 +1349,7 @@ dependencies = [
  "pingora-http",
  "pingora-load-balancing",
  "pingora-proxy",
+ "regex",
  "rs-consul",
  "serde_yaml 0.9.33",
  "structopt",
@@ -1432,9 +1433,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.10.3"
+version = "1.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b62dbe01f0b06f9d8dc7d49e05a0785f153b00b2c227856282f671e0318c9b15"
+checksum = "c117dbdfde9c8308975b6a18d71f3f385c89461f7b3fb054288ecf2a2058ba4c"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -1540,8 +1541,6 @@ dependencies = [
 [[package]]
 name = "rs-consul"
 version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3685742a060eb853bbd9f25692ec62dad9d52453781967e78e6cd31af1e55f3e"
 dependencies = [
  "base64",
  "futures",

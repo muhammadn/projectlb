@@ -1,7 +1,9 @@
 use pingora::prelude::*;
 use crate::consul::get_service_address_ports;
+use crate::consul::get_service_names;
 use core::fmt::Error;
 use std::net::{SocketAddr, ToSocketAddrs};
+use regex::Regex;
 
 use async_trait::async_trait;
 use pingora_core::services::background::background_service;
@@ -40,13 +42,14 @@ impl ProxyHttp for LB {
 fn main() {
   // initialize everything beforehand
   let upstream_servers = initialization();
+  //let upstream_servers = generate_upstreams("taqisystems-site".to_string());
 
   // read command line arguments
   let opt = Opt::from_args();
   let mut server = Server::new(Some(opt)).unwrap();
   server.bootstrap();
 
-  // Note that upstreams needs to be declared as `mut` now
+  // upstreams
   let upstream_vector = &upstream_servers.unwrap();
   let upstream_iter = (&upstream_vector[..]).to_socket_addrs().unwrap();
   let mut upstreams =
@@ -71,10 +74,44 @@ fn main() {
 
 // all the stuff we need to do before starting load balancer
 #[tokio::main]
-async fn initialization() -> Result<Vec<SocketAddr>, Error>{
+async fn initialization() -> Result<Vec<SocketAddr>, Error> {
+  let upstreams = Vec::new();
+
+  let service_names = get_service_names().await;
+  let service_names = service_names.unwrap();
+  for service_name in service_names.response.iter() {
+    if service_name.1.contains(&"traefik.enable=true".to_string()) {
+      println!("{:?}", service_name.0);
+      for sd in service_name.1 {
+        if !service_name.1.is_empty() {
+          let re = Regex::new(r"(`([^)]+)`)").unwrap(); 
+          if re.is_match(&sd) {
+            let caps = match re.captures(&sd) {
+              Some(host) => host.get(2).unwrap().as_str(),
+              None => "",
+            };
+
+            println!("Host is {:?}", caps);
+
+            let upstreams = generate_upstreams(service_name.0.to_string(), caps.to_string());
+            let upstreams = upstreams.await;
+            return upstreams;
+          }
+        }
+      }
+    }
+  }
+
+  Ok(upstreams)
+}
+
+// generate upstreams
+async fn generate_upstreams(service_name: String, _host: String) -> Result<Vec<SocketAddr>, Error> {
   // get address and ports for specific service
-  let services = get_service_address_ports("<consul service name>").await;
-  let services = services.unwrap();
+  let services = get_service_address_ports(service_name);
+  let services = services.await.unwrap();
+
+  println!("{:?}", services);
 
   // initialize new vector for upstreams
   let mut upstreams: Vec<SocketAddr> = Vec::new();
@@ -90,9 +127,5 @@ async fn initialization() -> Result<Vec<SocketAddr>, Error>{
   }
 
   println!("upstreams from consul: {:?}", upstreams);
-  println!("initialization has finished!");
-
-  // load loadbalancer configuration
-  //let config = config_loader().unwrap();
   Ok(upstreams)
 }
