@@ -1,9 +1,13 @@
 use pingora::prelude::*;
 use crate::consul::get_service_address_ports;
 use crate::consul::get_service_names;
+//use crate::consul::register_service;
 use core::fmt::Error;
 use std::net::{SocketAddr, ToSocketAddrs};
 use regex::Regex;
+//use std::collections::HashMap;
+//use rs_consul::RegisterEntityPayload;
+//use rs_consul::RegisterEntityService;
 
 use async_trait::async_trait;
 use pingora_core::services::background::background_service;
@@ -75,8 +79,12 @@ fn main() {
 // all the stuff we need to do before starting load balancer
 #[tokio::main]
 async fn initialization() -> Result<Vec<SocketAddr>, Error> {
-  let upstreams = Vec::new();
 
+  // register service
+  //let _ = register().await;
+  
+  // get all service that needs to setup for loadbalancer
+  let upstreams = Vec::new();
   let service_names = get_service_names().await;
   let service_names = service_names.unwrap();
   for service_name in service_names.response.iter() {
@@ -129,3 +137,13 @@ async fn generate_upstreams(service_name: String, _host: String) -> Result<Vec<S
   println!("upstreams from consul: {:?}", upstreams);
   Ok(upstreams)
 }
+
+// register ourselves to consul
+/*async fn register() -> Result<(), Error> {
+  let service = RegisterEntityService{ID: Some("123".to_string()), Service: "projectlb".to_string(), Tags: Vec::new(), TaggedAddresses: HashMap::new(), Meta: HashMap::new(), Port: None, Namespace: None};
+
+  let payload = RegisterEntityPayload{ID: None, Node: "test".to_string(), Address: "127.0.0.1".to_string(), Datacenter: Some("kbr1".to_string()), TaggedAddresses: HashMap::new(), NodeMeta: HashMap::new(), Service: Some(service), Check: None, SkipNodeUpdate: None};
+  let _ = register_service(payload).await;
+
+  Ok(())
+}*/
